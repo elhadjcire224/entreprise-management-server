@@ -3,8 +3,10 @@ import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { compose } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
+import Company from './company.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -33,9 +35,15 @@ export default class Administrator extends compose(BaseModel, AuthFinder) {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
+  @hasMany(() => Company, {
+    foreignKey: 'validatedById',
+  })
+  declare validatedCompanies: HasMany<typeof Company>
+
   static accessTokens = DbAccessTokensProvider.forModel(Administrator, {
     expiresIn: '7 days',
     prefix: 'oat_',
+    table: 'administrator_access_tokens',
     type: 'auth_token',
   })
 }
