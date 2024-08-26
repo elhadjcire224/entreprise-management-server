@@ -15,8 +15,9 @@ export const registrationValidator = vine.compile(
       .email()
       .normalizeEmail()
       .unique(async (db, value) => {
-        const exists = await db.from('administrators').select('id').whereILike('email', value)
-        return !!exists.length
+        const result = await db.from('administrators').select('id').whereILike('email', value)
+        console.log(result)
+        return result.length ? false : true
       }),
     password: vine.string().minLength(6),
   })

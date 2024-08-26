@@ -35,15 +35,13 @@ export default class Administrator extends compose(BaseModel, AuthFinder) {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @hasMany(() => Company, {
-    foreignKey: 'validatedById',
-  })
-  declare validatedCompanies: HasMany<typeof Company>
+  @hasMany(() => Company)
+  declare assignedCompanies: HasMany<typeof Company>
 
   static accessTokens = DbAccessTokensProvider.forModel(Administrator, {
     expiresIn: '7 days',
     prefix: 'oat_',
-    table: 'administrator_access_tokens',
+    table: 'auth_access_tokens',
     type: 'auth_token',
   })
 }

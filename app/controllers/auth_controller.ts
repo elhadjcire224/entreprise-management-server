@@ -18,11 +18,17 @@ export default class AuthController {
     return response.noContent()
   }
 
+  async me({ auth, response }: HttpContext) {
+    const admin = auth.user!
+    return response.ok(admin)
+  }
+
   async register({ request, response }: HttpContext) {
     const data = await request.validateUsing(registrationValidator)
     const first = await Administrator.first()
     let admin = new Administrator()
-    if (first) admin.role = Roles.ADMIN
+    if (!first) admin.role = Roles.ADMIN
+    admin.role = Roles.VALIDATOR
     admin.merge(data)
     await admin.save()
     const token = await TokensService.generateToken(admin)
